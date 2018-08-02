@@ -1,5 +1,5 @@
 from flask import Flask, render_template, Response
-import cv2
+#import cv2
 import os
 import glob
 from flask_cors import CORS
@@ -16,6 +16,7 @@ from object_detection.utils import visualization_utils as vis_util
 import argparse
 from datetime import datetime
 import time
+from io import BytesIO
 
 correct = 0
 
@@ -86,11 +87,32 @@ def find_wally():
 								#plt.imshow(image_np)
 								#plt.show()
 
+								#NOTE: RESTACK IS UNESSISARY NOW THAT IM NOT USING IMAGE ENCODE FROM CV2, TAKE OUT
+
 								#LOOK HERE
-								RGB_img = cv2.cvtColor(image_np, cv2.COLOR_BGR2RGB)
-								ret, jpeg = cv2.imencode('.jpg', RGB_img)
+								print(np.shape(image_np))
+								print(type(image_np))
+								B = image_np[:,:,0]
+								G = image_np[:,:,1]
+								R = image_np[:,:,2]
+								#print('B SHAPE:')
+								#print(np.shape(B))
+								RGB_img = np.dstack([B,G,R])
+								#print('RGB_TSHAPE:')
+								#print(np.shape(RGB_img_T))
+								#RGB_img = cv2.cvtColor(image_np, cv2.COLOR_BGR2RGB)
+								im = Image.fromarray(RGB_img)
+								size = 300 , 200
+								im_small = im.resize(size, Image.ANTIALIAS)
+
+								with BytesIO() as f:
+									im_small.save(f, format='JPEG')
+									jpeg = f.getvalue()
+
+								#ret, jpeg = cv2.imencode('.jpg', RGB_img)
 								yield (b'--frame\r\n'
-									b'Content-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n\r\n')
+									b'Content-Type: image/jpeg\r\n\r\n' + jpeg + b'\r\n\r\n')
+									#b'Content-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n\r\n')
 								#plt.show()
 						else:
 							break
