@@ -55,7 +55,6 @@ def find_wally():
 	
 	with detection_graph.as_default():
 			with tf.Session(graph=detection_graph) as sess:
-				while time.time() < t_end:
 					for image in glob.glob('images/*.jpg'):
 						if time.time() < t_end:
 								print(image)
@@ -117,6 +116,7 @@ def find_wally():
 								#plt.show()
 						else:
 							break
+	time.sleep(45)
 	correct = 0
 	print(str(correct) + '/' + str(total))
 	#print(start_t)

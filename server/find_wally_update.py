@@ -31,7 +31,7 @@ label_map = label_map_util.load_labelmap('./trained_model/labels.txt')
 categories = label_map_util.convert_label_map_to_categories(label_map, max_num_classes=1, use_display_name=True)
 category_index = label_map_util.create_category_index(categories)
 
-for image in glob.glob("images/*"): 
+for image in glob.glob("wally images found for editing/*"): 
 
     with detection_graph.as_default():
       with tf.Session(graph=detection_graph) as sess:
@@ -47,7 +47,9 @@ for image in glob.glob("images/*"):
             feed_dict={image_tensor: np.expand_dims(image_np, axis=0)})
 
         if scores[0][0] < 0.1:
-            sys.exit('Wally not found :(')
+            print('Wally not found :(')
+            continue
+            #sys.exit('Wally not found :(')
 
         print('Wally found')
         print(str(datetime.now))
@@ -61,4 +63,4 @@ for image in glob.glob("images/*"):
             line_thickness=8)
         plt.figure(figsize=(12, 8))
         plt.imshow(image_np)
-        #plt.show()
+        plt.show()
